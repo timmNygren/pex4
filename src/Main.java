@@ -8,6 +8,8 @@ import java.awt.event.ActionListener;
  */
 public class Main {
 
+    private TurnSender player;
+
     private JFrame mainFrame;
     private JButton serverButton;
     private JButton clientButton;
@@ -22,7 +24,10 @@ public class Main {
         serverButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("CALL ME");
+                GameHost host = new GameHost();
+                player = host;
+                new Thread(host).start();
+                mainFrame.setVisible(false);
             }
         });
         clientButton = new JButton("Join a game");
@@ -30,6 +35,7 @@ public class Main {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("CALL ME MAYBE");
+                // mainFrame.setVisible(false);
             }
         });
 
