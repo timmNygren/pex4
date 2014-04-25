@@ -1,5 +1,4 @@
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -8,34 +7,32 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.Buffer;
 
 /**
  * Created by Samus on 4/24/14.
  */
-public class GameHost implements Runnable, TurnSender {
+public class GameClient implements Runnable, TurnSender {
 
-    private Game game;
     private JFrame mainFrame;
     private JLabel label;
     private JTextField text;
-
-    private PrintWriter output;
     private String hostName;
     private String clientName;
 
-    public GameHost(String name) {
-        game = new Game();
-        hostName = name;
+    private PrintWriter output;
+
+    public GameClient(String name) {
+        clientName = name;
 
         mainFrame = new JFrame("Tic-Tac-Toe: Player " + name);
         mainFrame.setLayout(new BorderLayout());
         mainFrame.setSize(new Dimension(Main.WINDOW_SIZE, Main.WINDOW_SIZE));
-        mainFrame.setLocation(50,50);
+        mainFrame.setLocation(50, 50);
 
-        label = new JLabel("Text that I want");
+        label = new JLabel("Client Text that I want");
 
         text = new JTextField(20);
         text.addActionListener(new ActionListener() {
@@ -49,28 +46,32 @@ public class GameHost implements Runnable, TurnSender {
         mainFrame.add(label, BorderLayout.NORTH);
         mainFrame.add(text, BorderLayout.SOUTH);
 
+
         mainFrame.setVisible(true);
     }
 
     @Override
     public void run() {
-        try {
-            label.setText("Connect to " + InetAddress.getLocalHost().getHostAddress() + ".");
-        } catch(UnknownHostException e) {
-            e.printStackTrace();
-            System.exit(1);
+        String ip = JOptionPane.showInputDialog(mainFrame, "Enter IP address for server:", "Game Client", JOptionPane.QUESTION_MESSAGE);
+
+        if (ip == null || ip.isEmpty()) {
+            try {
+                ip = InetAddress.getLocalHost().getHostAddress();
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
         }
 
         try {
-            ServerSocket serverSocket = new ServerSocket(Main.PORT);
-            Socket gameClientSocket = serverSocket.accept();
-            BufferedReader input = new BufferedReader(new InputStreamReader(gameClientSocket.getInputStream()));
-            output = new PrintWriter(gameClientSocket.getOutputStream(), true);
+            Socket clientSocket = new Socket(ip, Main.PORT);
+            BufferedReader input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            output = new PrintWriter(clientSocket.getOutputStream(), true);
 
             // Exchange names for 'waiting for move from ' text
-            clientName = input.readLine();
-            output.println(hostName);
-            label.setText("Connected to " + clientName);
+            output.println(clientName);
+            hostName = input.readLine();
+            label.setText("Connected to " + hostName);
             String move;
 
             do {
@@ -82,8 +83,8 @@ public class GameHost implements Runnable, TurnSender {
 
             output.println("raggle fraggle");
 
-            gameClientSocket.close();
-            serverSocket.close();
+            clientSocket.close();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
