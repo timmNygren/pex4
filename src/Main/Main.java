@@ -1,3 +1,8 @@
+package Main;
+
+import Model.GameClient;
+import Model.GameHost;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
