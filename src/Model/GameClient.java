@@ -34,8 +34,8 @@ public class GameClient extends GamePlayer {
             output = new PrintWriter(clientSocket.getOutputStream(), true);
 
             // Exchange names for 'waiting for move from ' text
-            output.println(clientName);
-            hostName = input.readLine();
+            output.println(name);
+            opponentName = input.readLine();
             // label.setText("Connected to " + hostName);
             // TODO: Make connected popup?
 

@@ -12,15 +12,15 @@ public abstract class GamePlayer implements Runnable {
     protected String connectionMessage;
     protected String gamePlayerIdentifier;
 
-    protected String hostName;
-    protected String clientName;
+    protected String name;
+    protected String opponentName;
 
     protected Socket connectionSocket;
     protected BufferedReader input;
     protected PrintWriter output;
 
     public GamePlayer(String name) {
-        clientName = name;
+        this.name = name;
     }
 
     protected abstract void connect(String ip);
@@ -65,13 +65,7 @@ public abstract class GamePlayer implements Runnable {
 
     }
 
-    public String getHostName() {
-        return hostName;
-    }
-
-    public String getClientName() {
-        return clientName;
-    }
+    public String getName() { return name; }
 
     public String getConnectionMessage() {
         return connectionMessage;
