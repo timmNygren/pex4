@@ -3,15 +3,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-/**
- * Created by Samus on 4/24/14.
- */
 public class Main {
 
     public static final int WINDOW_SIZE = 800;
     public static final int PORT = 51042;
     private final String DEFAULT_NAME = "Tic-Tac-Toe Beginner";
-    private TurnSender player;
 
     private String name;
 

@@ -11,10 +11,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.Buffer;
 
-/**
- * Created by Samus on 4/24/14.
- */
-public class GameClient implements Runnable, TurnSender {
+public class GameClient implements Runnable {
 
     private JFrame mainFrame;
     private JLabel label;
@@ -90,7 +87,6 @@ public class GameClient implements Runnable, TurnSender {
         }
     }
 
-    @Override
     public void sendTurn(String move) {
         output.println(move);
     }

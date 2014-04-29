@@ -12,10 +12,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-/**
- * Created by Samus on 4/24/14.
- */
-public class GameHost implements Runnable, TurnSender {
+public class GameHost implements Runnable {
 
     private Game game;
     private JFrame mainFrame;
@@ -89,7 +86,6 @@ public class GameHost implements Runnable, TurnSender {
         }
     }
 
-    @Override
     public void sendTurn(String move) {
         output.println(move);
     }

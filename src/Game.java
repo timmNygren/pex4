@@ -1,6 +1,3 @@
-/**
- * Created by Samus on 4/24/14.
- */
 public class Game {
 
     private String gameString;
