@@ -74,7 +74,9 @@ public class GameClient extends GamePlayer {
                 String move;
 
                 do {
+                    System.out.println("Posting read");
                     move = readMessage();
+                    System.out.println("Read: " + move);
                     if (move == null) {
                         System.err.println("Message failed to read");
                         return;

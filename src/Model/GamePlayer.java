@@ -45,14 +45,17 @@ public abstract class GamePlayer implements Runnable, GameFrame.GameFrameEventLi
 
         try {
             if (input != null) {
+                System.out.println("Closing input");
                 input.close();
             }
 
             if (output != null) {
+                System.out.println("Closing output");
                 output.close();
             }
 
             if (connectionSocket != null) {
+                System.out.println("Closing connection socket");
                 connectionSocket.close();
             }
         }
@@ -82,7 +85,7 @@ public abstract class GamePlayer implements Runnable, GameFrame.GameFrameEventLi
 
     protected void sendMessage(String message) {
         System.out.println("writeToOpponent: " + message);
-        output.write(message);
+        output.println(message);
     }
 
     protected String readMessage() {
