@@ -26,13 +26,15 @@ public class GameFrame extends JFrame {
         setSize(new Dimension(Main.Main.WINDOW_SIZE, Main.Main.WINDOW_SIZE));
         setLocation(50, 50);
 
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                super.windowClosing(e);
                 if (gameFrameEventListener != null) {
                     gameFrameEventListener.onQuitButtonPressed();
                 }
+                System.out.println("Game window closing");
+                super.windowClosing(e);
             }
         });
 
