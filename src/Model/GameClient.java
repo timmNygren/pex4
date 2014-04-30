@@ -111,6 +111,10 @@ public class GameClient extends GamePlayer {
                         mainRenderFrame.updateBoardDisplay(splitResponse[1]);
                         mainRenderFrame.showLoseDialog();
                     }
+                    else if (splitResponse[0].equals("tie")) {
+                        mainRenderFrame.updateBoardDisplay(splitResponse[1]);
+                        mainRenderFrame.showTieDialog();
+                    }
                     else {
                         System.err.println("Bad communications verb");
                     }

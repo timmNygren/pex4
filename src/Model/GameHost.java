@@ -103,8 +103,14 @@ public class GameHost extends GamePlayer {
                             if (game.checkForWin()) {
                                 sendMessage("win->" + game.getGameString());
                                 mainRenderFrame.showLoseDialog();
+                                mainRenderFrame.updateBoardDisplay(game.getGameString());
                                 // Stop the read loop here since the game is over
                                 break;
+                            }
+                            else if (game.checkForTie()) {
+                                sendMessage("tie->" + game.getGameString());
+                                mainRenderFrame.showTieDialog();
+                                mainRenderFrame.updateBoardDisplay(game.getGameString());
                             }
                             else {
                                 sendMessage("update->" + game.getGameString());

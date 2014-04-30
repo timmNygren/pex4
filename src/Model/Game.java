@@ -46,17 +46,27 @@ public class Game {
     }
 
     public boolean checkForWin() {
-        if ((gameString.charAt(0) == gameString.charAt(1) && gameString.charAt(1) == gameString.charAt(2)) || // Top row
-            (gameString.charAt(3) == gameString.charAt(4) && gameString.charAt(4) == gameString.charAt(5)) || // Middle row
-            (gameString.charAt(6) == gameString.charAt(7) && gameString.charAt(7) == gameString.charAt(8)) || // Bottom row
-            (gameString.charAt(0) == gameString.charAt(3) && gameString.charAt(3) == gameString.charAt(6)) || // Left Column
-            (gameString.charAt(1) == gameString.charAt(4) && gameString.charAt(4) == gameString.charAt(7)) || // Middle Column
-            (gameString.charAt(2) == gameString.charAt(5) && gameString.charAt(5) == gameString.charAt(8)) || // Right Column
-            (gameString.charAt(0) == gameString.charAt(4) && gameString.charAt(4) == gameString.charAt(8)) || // Right to Left Diagonal
-            (gameString.charAt(2) == gameString.charAt(4) && gameString.charAt(4) == gameString.charAt(6))) { // Left to Right Diagonal
-            return true;
+        return ((gameString.charAt(0) == gameString.charAt(1) && gameString.charAt(1) == gameString.charAt(2)) || // Top row
+                (gameString.charAt(3) == gameString.charAt(4) && gameString.charAt(4) == gameString.charAt(5)) || // Middle row
+                (gameString.charAt(6) == gameString.charAt(7) && gameString.charAt(7) == gameString.charAt(8)) || // Bottom row
+                (gameString.charAt(0) == gameString.charAt(3) && gameString.charAt(3) == gameString.charAt(6)) || // Left Column
+                (gameString.charAt(1) == gameString.charAt(4) && gameString.charAt(4) == gameString.charAt(7)) || // Middle Column
+                (gameString.charAt(2) == gameString.charAt(5) && gameString.charAt(5) == gameString.charAt(8)) || // Right Column
+                (gameString.charAt(0) == gameString.charAt(4) && gameString.charAt(4) == gameString.charAt(8)) || // Right to Left Diagonal
+                (gameString.charAt(2) == gameString.charAt(4) && gameString.charAt(4) == gameString.charAt(6))); // Left to Right Diagonal
+
+    }
+
+    public boolean checkForTie() {
+        if (checkForWin()) {
+            return false;
         }
-        return false;
+        for (char c : gameString.toCharArray()) {
+            if (c != 'X' && c != 'O') {
+                return false;
+            }
+        }
+        return true;
     }
 
     private DecodeMoveReturnCode decodeMove(String moveString) {
