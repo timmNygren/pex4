@@ -138,7 +138,7 @@ public class GameFrame extends JFrame {
         dialog.setTitle("Message");
         //dialog.setModal(true);
         dialog.setContentPane(optionPane);
-        dialog.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        dialog.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         dialog.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
