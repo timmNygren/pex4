@@ -91,7 +91,7 @@ public class GameClient extends GamePlayer {
 
                     if (splitResponse[0].equals("update")) {
                         if (splitResponse[1].equals("BAD")) {
-                            updateGameBoard(lastMove);
+                            System.out.println("Bad move");
                         }
                         else {
                             mainRenderFrame.hideWaitDialog();
