@@ -41,8 +41,10 @@ public abstract class GamePlayer implements Runnable, GameFrame.GameFrameEventLi
     @Override
     public void run() {
         connect();
-        startGame();
-
+        if (input != null && output != null && connectionSocket != null) {
+            System.out.println("Starting game");
+            startGame();
+        }
         try {
             if (input != null) {
                 System.out.println("Closing input");
@@ -62,18 +64,20 @@ public abstract class GamePlayer implements Runnable, GameFrame.GameFrameEventLi
         catch (IOException e) {
             System.err.println("Exception closing resources. Message: " + e.getMessage());
             e.printStackTrace();
+            System.exit(0);
         }
+        System.exit(0);
     }
 
     protected abstract void updateGameBoard(String move);
 
-    public void disconnect() {
-        stopping = true; // This causes the game loop to end and the resources to be released
-    }
-
     @Override
     public void onQuitButtonPressed() {
-        disconnect();
+        System.out.println("In quit callback");
+        stopping = true; // This causes the game loop to end and the resources to be released
+        mainRenderFrame.dispose();
+        System.out.println("Disposed");
+        sendQuit();
     }
 
     @Override
@@ -84,8 +88,10 @@ public abstract class GamePlayer implements Runnable, GameFrame.GameFrameEventLi
     public String getName() { return name; }
 
     protected void sendMessage(String message) {
-        System.out.println("writeToOpponent: " + message);
-        output.println(message);
+        if (output != null) {
+            System.out.println("writeToOpponent: " + message);
+            output.println(message);
+        }
     }
 
     protected String readMessage() {
@@ -99,4 +105,7 @@ public abstract class GamePlayer implements Runnable, GameFrame.GameFrameEventLi
         return message;
     }
 
+    protected void sendQuit() {
+        sendMessage(QUIT_KEYWORD);
+    }
 }

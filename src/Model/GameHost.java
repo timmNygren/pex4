@@ -1,5 +1,7 @@
 package Model;
 
+import com.sun.corba.se.spi.activation.Server;
+
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -16,6 +18,7 @@ import java.net.UnknownHostException;
 public class GameHost extends GamePlayer {
 
     private Game game;
+    private ServerSocket serverSocket;
 
     public GameHost(String name) {
         super(name);
@@ -35,10 +38,10 @@ public class GameHost extends GamePlayer {
             System.exit(1);
         }
         Thread connectThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    ServerSocket serverSocket = new ServerSocket(Main.Main.PORT);
+                    @Override
+                    public void run() {
+                        try {
+                    serverSocket = new ServerSocket(Main.Main.PORT);
                     Socket gameClientSocket = serverSocket.accept();
                     input = new BufferedReader(new InputStreamReader(gameClientSocket.getInputStream()));
                     output = new PrintWriter(gameClientSocket.getOutputStream(), true);
@@ -50,6 +53,7 @@ public class GameHost extends GamePlayer {
                 }
                 catch (IOException e) {
                     e.printStackTrace();
+
                 }
             }
         });
@@ -72,12 +76,16 @@ public class GameHost extends GamePlayer {
             public void run() {
                 String move;
 
-                do {
+                while (true) {
                     System.out.println("Posting read");
                     move = readMessage();
                     System.out.println("Read: " + move);
                     if (move == null) {
                         System.err.println("Message failed to read");
+                        return;
+                    }
+
+                    if (move.equals(QUIT_KEYWORD)) {
                         return;
                     }
 
@@ -109,12 +117,13 @@ public class GameHost extends GamePlayer {
                     else {
                         System.err.println("Bad communications verb");
                     }
-                } while (!move.equalsIgnoreCase(QUIT_KEYWORD) && !stopping);
+                }
             }
         });
         readThread.start();
         try {
             readThread.join();
+            sendQuit();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -132,6 +141,17 @@ public class GameHost extends GamePlayer {
                 mainRenderFrame.showWaitDialog(opponentName);
                 mainRenderFrame.updateBoardDisplay(game.getGameString());
             }
+        }
+    }
+
+    @Override
+    public void onQuitButtonPressed() {
+        super.onQuitButtonPressed();
+        try {
+            System.out.println("Closing the server socket");
+            serverSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

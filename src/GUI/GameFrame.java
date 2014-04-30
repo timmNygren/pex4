@@ -31,7 +31,7 @@ public class GameFrame extends JFrame {
         setSize(new Dimension(Main.Main.WINDOW_SIZE, Main.Main.WINDOW_SIZE));
         setLocation(50, 50);
 
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -149,9 +149,12 @@ public class GameFrame extends JFrame {
         dialog.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
+                System.out.println("Dialog close detected");
                 if (gameFrameEventListener != null) {
+                    System.out.println("Notifying listener");
                     gameFrameEventListener.onQuitButtonPressed();
                 }
+                super.windowClosing(e);
             }
         });
         dialog.pack();

@@ -74,12 +74,17 @@ public class GameClient extends GamePlayer {
             public void run() {
                 String move;
 
-                do {
+                while (true) {
                     System.out.println("Posting read");
                     move = readMessage();
                     System.out.println("Read: " + move);
+
                     if (move == null) {
                         System.err.println("Message failed to read");
+                        return;
+                    }
+
+                    if (move.equals(QUIT_KEYWORD)) {
                         return;
                     }
 
@@ -109,12 +114,13 @@ public class GameClient extends GamePlayer {
                     else {
                         System.err.println("Bad communications verb");
                     }
-                } while (!move.equalsIgnoreCase(QUIT_KEYWORD) && !stopping);
+                }
             }
         });
         readThread.start();
         try {
             readThread.join();
+            sendQuit();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
