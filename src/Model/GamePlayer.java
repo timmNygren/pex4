@@ -56,8 +56,11 @@ public abstract class GamePlayer implements Runnable {
     public void run() {
         try {
             System.out.println("Running thread");
+            System.out.println("Connecting");
             connect();
+            System.out.println("Connected, starting game");
             startGame();
+            System.out.println("Game ended");
         }
         catch (IOException e) {
             System.err.println("Exception in game execution, socket could not be read or written");
