@@ -1,8 +1,8 @@
 package Main;
 
-import Model.GameClient;
-import Model.GameHost;
-import Model.GamePlayer;
+import Communication.GameClient;
+import Communication.GameHost;
+import Communication.GamePlayer;
 
 import javax.swing.*;
 import java.awt.*;

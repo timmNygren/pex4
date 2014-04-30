@@ -1,4 +1,4 @@
-package Model;
+package Communication;
 
 import javax.swing.*;
 import java.io.BufferedReader;
@@ -36,7 +36,7 @@ public class GameClient extends GamePlayer {
         Thread connectThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                String ip = JOptionPane.showInputDialog(mainRenderFrame, "Enter IP address for server:", "Model.GameClient", JOptionPane.QUESTION_MESSAGE);
+                String ip = JOptionPane.showInputDialog(mainRenderFrame, "Enter IP address for server:", "Communication.GameClient", JOptionPane.QUESTION_MESSAGE);
 
                 if (ip == null || ip.isEmpty()) {
                     try {
