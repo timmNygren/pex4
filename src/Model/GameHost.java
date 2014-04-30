@@ -1,11 +1,5 @@
 package Model;
 
-import com.sun.corba.se.spi.activation.Server;
-
-import javax.swing.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.image.renderable.RenderableImageProducer;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,11 +9,21 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+/**
+ * Represents a client in the game
+ * Controls the connection and read write logic
+ * for talking with the client
+ */
 public class GameHost extends GamePlayer {
 
     private Game game;
     private ServerSocket serverSocket;
 
+    /**
+     * Parametrized constructor
+     * Creates a new instance of the host
+     * @param name      display name of the host
+     */
     public GameHost(String name) {
         super(name);
         game = new Game();
@@ -27,7 +31,10 @@ public class GameHost extends GamePlayer {
         mainRenderFrame.setLocation(50, 50);
     }
 
-    // On a new thread so that swing does not block it
+    /**
+     * Displays a panel with the ip for connecting and awaits a connection
+     * On a new thread so that swing does not block it
+     */
     @Override
     protected void connect() {
         String connectingIP = "BAD IP";
@@ -66,7 +73,11 @@ public class GameHost extends GamePlayer {
         }
     }
 
-    // On a new thread so that swing does not block it
+    /**
+     * Handles the execution of the game by starting the read loop
+     * and managing the cleanup after
+     * On a new thread so that swing does not block it
+     */
     @Override
     protected void startGame() {
         // Client never goes first
@@ -135,6 +146,11 @@ public class GameHost extends GamePlayer {
         }
     }
 
+    /**
+     * Attempts to update the game board by directly invoking the methods on the
+     * game object. Also checks win and tie conditions here
+     * @param move          encoded move to attempt to make
+     */
     @Override
     protected void updateGameBoard(String move) {
         if (game.makeMove(move)) {
@@ -150,6 +166,10 @@ public class GameHost extends GamePlayer {
         }
     }
 
+    /**
+     * Attempts to close the server socket on close,
+     * in case a connection has not yet been made.
+     */
     @Override
     public void onQuitButtonPressed() {
         super.onQuitButtonPressed();
