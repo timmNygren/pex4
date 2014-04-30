@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public abstract class GamePlayer implements Runnable {
+public abstract class GamePlayer implements Runnable, GameFrame.GameFrameEventListener {
 
     protected static final String QUIT_KEYWORD = ":quit:";
 
@@ -24,11 +24,15 @@ public abstract class GamePlayer implements Runnable {
 
     protected GameFrame mainRenderFrame;
 
+    protected boolean stopping;
+
 
     public GamePlayer(String name) {
         this.name = name;
+        stopping = false;
         mainRenderFrame = new GameFrame(name);
         mainRenderFrame.setVisible(true);
+        mainRenderFrame.setGameFrameEventListener(this);
     }
 
     protected abstract void connect();
@@ -37,12 +41,8 @@ public abstract class GamePlayer implements Runnable {
     @Override
     public void run() {
         try {
-            System.out.println("Running thread");
-            System.out.println("Connecting");
             connect();
-            System.out.println("Connected, starting game");
             startGame();
-            System.out.println("Game ended");
         }
         catch (IOException e) {
             System.err.println("Exception in game execution, socket could not be read or written");
@@ -69,13 +69,20 @@ public abstract class GamePlayer implements Runnable {
         }
     }
 
+    protected abstract void updateGameBoard(String move);
 
-    public void sendTurn(String move) {
-        output.println(move);
+    public void disconnect() {
+        stopping = true; // This causes the game loop to end and the resources to be released
     }
 
-    public void onDisconnect() {
+    @Override
+    public void onQuitButtonPressed() {
+        disconnect();
+    }
 
+    @Override
+    public void onValidLocationClicked(String encodedClickMessage) {
+        updateGameBoard(encodedClickMessage);
     }
 
     public String getName() { return name; }

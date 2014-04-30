@@ -1,6 +1,8 @@
 package Model;
 
 import javax.swing.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,9 +17,11 @@ public class GameHost extends GamePlayer {
     private Game game;
     private JDialog connectingDialog;
 
+
     public GameHost(String name) {
         super(name);
         game = new Game();
+        mainRenderFrame.setMarker('X');
     }
 
     @Override
@@ -29,6 +33,28 @@ public class GameHost extends GamePlayer {
             e.printStackTrace();
             System.exit(1);
         }
+        Thread connectionThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (stopping) {return;}
+                    ServerSocket serverSocket = new ServerSocket(Main.Main.PORT);
+                    if (stopping) {return;}
+                    Socket gameClientSocket = serverSocket.accept();
+                    if (stopping) {return;}
+                    input = new BufferedReader(new InputStreamReader(gameClientSocket.getInputStream()));
+                    output = new PrintWriter(gameClientSocket.getOutputStream(), true);
+                    if (stopping) {return;}
+                    opponentName = input.readLine();
+                    output.println(name);
+                    connectionSocket = gameClientSocket;
+                    removeConnectingDialog();
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         // Create the content pane for the connecting message
         JOptionPane optionPane = new JOptionPane("Awaiting for opponent to connect to " + thisIP + ". Please wait.",
                 JOptionPane.INFORMATION_MESSAGE,
@@ -41,37 +67,16 @@ public class GameHost extends GamePlayer {
         connectingDialog.setModal(true);
         connectingDialog.setContentPane(optionPane);
         connectingDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-        connectingDialog.pack();
-        System.out.println("Creating connection thread");
-        Thread connectionThread = new Thread(new Runnable() {
+        connectingDialog.addWindowListener(new WindowAdapter() {
             @Override
-            public void run() {
-                try {
-                    System.out.println("Staring host connection");
-                    System.out.println("Creating server socket");
-                    ServerSocket serverSocket = new ServerSocket(Main.Main.PORT);
-                    System.out.println("Creating client socket, waiting for connection...");
-                    Socket gameClientSocket = serverSocket.accept();
-                    System.out.println("Connection established, getting input and output");
-                    input = new BufferedReader(new InputStreamReader(gameClientSocket.getInputStream()));
-                    System.out.println("Input created");
-                    output = new PrintWriter(gameClientSocket.getOutputStream(), true);
-                    System.out.println("Output created");
-                    System.out.println("Exchanging opponent names");
-                    // Exchange names for 'waiting for move from ' text
-                    opponentName = input.readLine();
-                    System.out.println("Got opponent name: " + opponentName);
-                    System.out.println("Sending host name");
-                    output.println(name);
-                    System.out.println("Saving connection socket");
-                    connectionSocket = gameClientSocket;
-                    removeConnectingDialog();
-                }
-                catch (IOException e) {
-                    e.printStackTrace();
-                }
+            public void windowClosing(WindowEvent e) {
+                stopping = true;
+                removeConnectingDialog();
             }
         });
+        connectingDialog.pack();
+        System.out.println("Creating connection thread");
+        stopping = false;
         connectionThread.start();
         connectingDialog.setVisible(true);
     }
@@ -92,6 +97,6 @@ public class GameHost extends GamePlayer {
 
             System.out.println(move);
 
-        } while (!move.equalsIgnoreCase(QUIT_KEYWORD));
+        } while (!move.equalsIgnoreCase(QUIT_KEYWORD) && !stopping);
     }
 }

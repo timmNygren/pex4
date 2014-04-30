@@ -1,6 +1,8 @@
 package Model;
 
 import javax.swing.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,6 +17,7 @@ public class GameClient extends GamePlayer {
 
     public GameClient(String name) {
         super(name);
+        mainRenderFrame.setMarker('O');
     }
 
     protected void connect() {
@@ -31,6 +34,25 @@ public class GameClient extends GamePlayer {
         }
 
         final String immutableIP = ip;
+        Thread connectionThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (stopping) {return;}
+                    Socket clientSocket = new Socket(immutableIP, Main.Main.PORT);
+                    input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                    output = new PrintWriter(clientSocket.getOutputStream(), true);
+                    if (stopping) {return;}
+                    // Exchange names for 'waiting for move from ' text
+                    output.println(name);
+                    opponentName = input.readLine();
+                    connectionSocket = clientSocket; // Save off the completed connection socket
+                    removeConnectingDialog();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
         // Create the content pane for the connecting message
         JOptionPane optionPane = new JOptionPane("Connecting to " + ip + ". Please wait.",
@@ -44,33 +66,15 @@ public class GameClient extends GamePlayer {
         connectingDialog.setModal(true);
         connectingDialog.setContentPane(optionPane);
         connectingDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-        connectingDialog.pack();
-        Thread connectionThread = new Thread(new Runnable() {
+        connectingDialog.addWindowListener(new WindowAdapter() {
             @Override
-            public void run() {
-                try {
-                    System.out.println("Start client connect");
-                    System.out.println("Creating client socket");
-                    Socket clientSocket = new Socket(immutableIP, Main.Main.PORT);
-                    System.out.println("Created client socket, getting input and output");
-                    input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                    System.out.println("Input created");
-                    output = new PrintWriter(clientSocket.getOutputStream(), true);
-                    System.out.println("Output created");
-                    System.out.println("Exchanging names");
-                    // Exchange names for 'waiting for move from ' text
-                    output.println(name);
-                    System.out.println("Name exchanged");
-                    opponentName = input.readLine();
-                    System.out.println("Got an opponent name: " + opponentName);
-                    connectionSocket = clientSocket; // Save off the completed connection socket
-                    System.out.println("Connection complete");
-                    removeConnectingDialog();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            public void windowClosing(WindowEvent e) {
+                stopping = true;
+                removeConnectingDialog();
             }
         });
+        connectingDialog.pack();
+        stopping = false;
         connectionThread.start();
         connectingDialog.setVisible(true);
     }
@@ -88,7 +92,7 @@ public class GameClient extends GamePlayer {
         do {
             move = input.readLine();
             System.out.println(move);
-        } while (!move.equalsIgnoreCase(QUIT_KEYWORD));
+        } while (!move.equalsIgnoreCase(QUIT_KEYWORD) && !stopping);
 
     }
 }
