@@ -2,31 +2,62 @@ package Model;
 
 import GUI.GameFrame;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+/**
+ * Base class for a player of the game, encapsulates the interfaces necessary
+ * and provides passthroughs and variables to the hosts and clients
+ */
 public abstract class GamePlayer implements Runnable, GameFrame.GameFrameEventListener {
 
+    /**
+     * Keyword to stop the game with, if encountered
+     */
     protected static final String QUIT_KEYWORD = ":quit:";
 
+    /**
+     * Name of this player
+     */
     protected String name;
+
+    /**
+     * Name of the opposing player
+     */
     protected String opponentName;
 
+    /**
+     * Socket used for communication
+     */
     protected Socket connectionSocket;
+
+    /**
+     * Used for reading information from the opponent
+     */
     protected BufferedReader input;
+
+    /**
+     * Used for writing information to the opponent
+     */
     protected PrintWriter output;
 
+    /**
+     * Frame that is used to render the game state
+     */
     protected GameFrame mainRenderFrame;
 
+    /**
+     * Used to stop the threads when the game is closing
+     */
     protected boolean stopping;
 
-
+    /**
+     * Parametrized constructor
+     * Creates the basic functionality of the base class
+     * @param name          name of the player
+     */
     public GamePlayer(String name) {
         this.name = name;
         stopping = false;
@@ -35,9 +66,25 @@ public abstract class GamePlayer implements Runnable, GameFrame.GameFrameEventLi
         mainRenderFrame.setGameFrameEventListener(this);
     }
 
+    /**
+     * Connects to another player
+     */
     protected abstract void connect();
+
+    /**
+     * Starts the game logic for a player
+     */
     protected abstract void startGame();
 
+    /**
+     * Attempts to make a change to the board
+     * @param move          encoded move to attempt
+     */
+    protected abstract void updateGameBoard(String move);
+
+    /**
+     * Encompasses a players entire execution from start to cleanup
+     */
     @Override
     public void run() {
         connect();
@@ -69,8 +116,11 @@ public abstract class GamePlayer implements Runnable, GameFrame.GameFrameEventLi
         System.exit(0);
     }
 
-    protected abstract void updateGameBoard(String move);
 
+    /**
+     * Callback used to cleanup the threads and game when quit is pressed
+     * or if a window is closed
+     */
     @Override
     public void onQuitButtonPressed() {
         System.out.println("In quit callback");
@@ -80,13 +130,20 @@ public abstract class GamePlayer implements Runnable, GameFrame.GameFrameEventLi
         sendQuit();
     }
 
+    /**
+     * Callback for when a location is clicked on the board when it is
+     * this player's turn to move
+     * @param encodedClickMessage       encoded move from the click
+     */
     @Override
     public void onValidLocationClicked(String encodedClickMessage) {
         updateGameBoard(encodedClickMessage);
     }
 
-    public String getName() { return name; }
-
+    /**
+     * Sends a message to the opponent through the output object
+     * @param message                   message to send
+     */
     protected void sendMessage(String message) {
         if (output != null) {
             System.out.println("writeToOpponent: " + message);
@@ -94,6 +151,10 @@ public abstract class GamePlayer implements Runnable, GameFrame.GameFrameEventLi
         }
     }
 
+    /**
+     * Reads the next message off of the input stream
+     * @return                          the next message on the stream
+     */
     protected String readMessage() {
         String message = null;
         try {
@@ -105,6 +166,9 @@ public abstract class GamePlayer implements Runnable, GameFrame.GameFrameEventLi
         return message;
     }
 
+    /**
+     * Convienence method for sending a quit message over the output pipe
+     */
     protected void sendQuit() {
         sendMessage(QUIT_KEYWORD);
     }
