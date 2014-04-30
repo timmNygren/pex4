@@ -3,6 +3,7 @@ package GUI;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 
 public class GameFrame extends JFrame {
@@ -222,24 +223,40 @@ public class GameFrame extends JFrame {
     private class GameCellPanel extends JPanel {
 
         private int index;
+        private char marker;
+        private int inset;
+
 
         public GameCellPanel(int index) {
             this.index = index;
-            setBackground(Color.GRAY);
+            this.marker = '.';
+            setBackground(Color.WHITE);
+            setBorder(BorderFactory.createLineBorder(Color.BLACK, 5));
+            inset = (int)(getWidth() * .05);
+        }
+
+        @Override
+        public void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2d = (Graphics2D)g;
+            g2d.setStroke(new BasicStroke(5.0f));
+            switch (marker) {
+                case 'X':
+                    g2d.setColor(Color.RED);
+                    g2d.drawLine(inset, inset, getWidth() - inset, getWidth() - inset);
+                    g2d.drawLine(getWidth() - inset, inset, inset, getWidth() - inset);
+                    break;
+                case 'Y':
+                    g2d.setColor(Color.BLUE);
+                    g2d.draw(new Ellipse2D.Double(getWidth() / 2, getHeight() / 2, getWidth() - 2 * inset, getHeight() - 2 * inset));
+                    break;
+                default:
+                    break;
+            }
         }
 
         public void updateCell(char marker) {
-            switch (marker) {
-                case 'X':
-                    setBackground(Color.RED);
-                    break;
-                case 'O':
-                    setBackground(Color.BLUE);
-                    break;
-                default:
-                    setBackground(Color.GRAY);
-                    break;
-            }
+            this.marker = marker;
             invalidate();
             repaint();
         }
