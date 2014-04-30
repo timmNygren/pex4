@@ -38,12 +38,6 @@ public class Main {
                 Thread listener = new Thread(currentGame);
                 listener.start();
                 mainFrame.setVisible(false);
-//                try {
-//                    listener.join();
-//                } catch (InterruptedException e1) {
-//                    e1.printStackTrace();
-//                }
-//                mainFrame.setVisible(true);
             }
         });
         clientButton = new JButton("Join a game");
@@ -54,12 +48,6 @@ public class Main {
                 Thread listener = new Thread(currentGame);
                 listener.start();
                 mainFrame.setVisible(false);
-//                try {
-//                    listener.join();
-//                } catch (InterruptedException e1) {
-//                    e1.printStackTrace();
-//                }
-//                mainFrame.setVisible(true);
             }
         });
 
