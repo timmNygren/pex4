@@ -136,6 +136,12 @@ public class GameFrame extends JFrame {
                 null);
         JDialog dialog = new JDialog();
         dialog.setTitle("Message");
+        if (marker == 'X') {
+            dialog.setLocation((Main.Main.WINDOW_SIZE - 75) / 2, (Main.Main.WINDOW_SIZE - 50) / 2);
+        }
+        else {
+            dialog.setLocation((Main.Main.WINDOW_SIZE + 25) * 3 / 2, (Main.Main.WINDOW_SIZE + 25) / 2);
+        }
         //dialog.setModal(true);
         dialog.setContentPane(optionPane);
         dialog.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
