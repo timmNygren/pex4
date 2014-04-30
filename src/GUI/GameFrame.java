@@ -122,7 +122,7 @@ public class GameFrame extends JFrame {
                 null);
         JDialog dialog = new JDialog();
         dialog.setTitle("Message");
-        dialog.setModal(true);
+        //dialog.setModal(true);
         dialog.setContentPane(optionPane);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         dialog.addWindowListener(new WindowAdapter() {
