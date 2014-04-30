@@ -55,26 +55,31 @@ public class GameFrame extends JFrame {
     public void showWaitDialog(String opponentName) {
         waitDialog = createButtonlessDialogWithMessage("Waiting for input from " + opponentName + "...");
         waitDialog.setVisible(true);
+        setEnabled(false);
     }
 
     public void showWinDialog() {
         winDialog = createButtonlessDialogWithMessage("You win!");
         winDialog.setVisible(true);
+        setEnabled(false);
     }
 
     public void showLoseDialog() {
         loseDialog = createButtonlessDialogWithMessage("You lose...");
         loseDialog.setVisible(true);
+        setEnabled(false);
     }
 
     public void showTieDialog(){
         tieDialog = createButtonlessDialogWithMessage("It's a tie.");
         tieDialog.setVisible(true);
+        setEnabled(false);
     }
 
     public void showConnectionDialog(String message) {
         connectingDialog = createButtonlessDialogWithMessage(message);
         connectingDialog.setVisible(true);
+        setEnabled(false);
     }
 
     public void hideWaitDialog() {
@@ -82,6 +87,7 @@ public class GameFrame extends JFrame {
             return;
         }
        waitDialog.dispose();
+        setEnabled(true);
     }
 
     public void hideWinDialog() {
@@ -89,6 +95,8 @@ public class GameFrame extends JFrame {
             return;
         }
         winDialog.dispose();
+        setEnabled(true);
+
     }
 
     public void hideLoseDialog() {
@@ -96,6 +104,8 @@ public class GameFrame extends JFrame {
             return;
         }
         loseDialog.dispose();
+        setEnabled(true);
+
     }
 
     public void hideTieDialog() {
@@ -103,6 +113,8 @@ public class GameFrame extends JFrame {
             return;
         }
         tieDialog.dispose();
+        setEnabled(true);
+
     }
 
     public void hideConnectionDialog() {
@@ -110,6 +122,8 @@ public class GameFrame extends JFrame {
             return;
         }
         connectingDialog.dispose();
+        setEnabled(true);
+
     }
 
     private JDialog createButtonlessDialogWithMessage(String message) {
@@ -124,7 +138,7 @@ public class GameFrame extends JFrame {
         dialog.setTitle("Message");
         //dialog.setModal(true);
         dialog.setContentPane(optionPane);
-        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.setDefaultCloseOperation(EXIT_ON_CLOSE);
         dialog.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
