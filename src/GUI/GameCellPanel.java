@@ -4,18 +4,35 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 
+/**
+ * Represents one cell on the game grid that can contain an X or an O
+ */
 public class GameCellPanel extends JPanel {
 
+    /**
+     * Scalar for sizing the objects on the grid
+     */
     private static final double INSET_SCALAR = 0.4;
 
+    /**
+     * An X or an O
+     */
     private char marker;
 
+    /**
+     * Default constructor
+     * Makes a panel with the bare minimum
+     */
     public GameCellPanel() {
         this.marker = '.';
         setBackground(Color.WHITE);
         setBorder(BorderFactory.createLineBorder(Color.BLACK, 5));
     }
 
+    /**
+     * Paints the component, giving it an X, an O, or nothing as necessary
+     * @param g             graphics used to draw
+     */
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -38,6 +55,10 @@ public class GameCellPanel extends JPanel {
         }
     }
 
+    /**
+     * Updates the marker and triggers a repaint
+     * @param marker        marker to update to
+     */
     public void updateCell(char marker) {
         this.marker = marker;
         invalidate();
