@@ -22,14 +22,15 @@ public class GameHost extends GamePlayer {
 
     @Override
     protected void connect() {
+        String thisIP = "BAD IP";
         try {
-            label.setText(("Connect to " + InetAddress.getLocalHost().getHostAddress() + "."));
+            thisIP = InetAddress.getLocalHost().getHostAddress();
         } catch(UnknownHostException e) {
             e.printStackTrace();
             System.exit(1);
         }
         // Create the content pane for the connecting message
-        JOptionPane optionPane = new JOptionPane("Awaiting for opponent to connect. Please wait.",
+        JOptionPane optionPane = new JOptionPane("Awaiting for opponent to connect to " + thisIP + ". Please wait.",
                 JOptionPane.INFORMATION_MESSAGE,
                 JOptionPane.DEFAULT_OPTION,
                 null,

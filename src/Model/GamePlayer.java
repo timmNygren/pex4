@@ -1,5 +1,7 @@
 package Model;
 
+import GUI.GameFrame;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -20,32 +22,12 @@ public abstract class GamePlayer implements Runnable {
     protected BufferedReader input;
     protected PrintWriter output;
 
-    protected JFrame mainRenderFrame;
-    protected JLabel label;
-    protected JTextField text;
+    protected GameFrame mainRenderFrame;
+
 
     public GamePlayer(String name) {
         this.name = name;
-        mainRenderFrame = new JFrame("Tic-Tac-Toe: Player " + this.name);
-        mainRenderFrame.setLayout(new BorderLayout());
-        mainRenderFrame.setSize(new Dimension(Main.Main.WINDOW_SIZE, Main.Main.WINDOW_SIZE));
-        mainRenderFrame.setLocation(50, 50);
-
-        label = new JLabel("Something");
-
-        text = new JTextField(20);
-        text.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String update = text.getText();
-                sendTurn(update);
-            }
-        });
-
-        mainRenderFrame.add(label, BorderLayout.NORTH);
-        mainRenderFrame.add(text, BorderLayout.SOUTH);
-
-
+        mainRenderFrame = new GameFrame(name);
         mainRenderFrame.setVisible(true);
     }
 
