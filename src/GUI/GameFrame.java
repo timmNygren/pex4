@@ -195,7 +195,7 @@ public class GameFrame extends JFrame {
         statusPanel.setLayout(new GridLayout(NUM_ROWS, NUM_COLS));
         GameCellPanel tempPanel;
         for (int i = 0; i < NUM_COLS * NUM_ROWS; ++i) {
-            tempPanel = new GameCellPanel(i);
+            tempPanel = new GameCellPanel();
             final int finalIndex = i;
             tempPanel.addMouseListener(new MouseAdapter() {
                 @Override
@@ -221,47 +221,5 @@ public class GameFrame extends JFrame {
     public interface GameFrameEventListener {
         public void onQuitButtonPressed();
         public void onValidLocationClicked(String encodedClickMessage);
-    }
-
-    private class GameCellPanel extends JPanel {
-
-        private int index;
-        private char marker;
-        private int inset;
-
-
-        public GameCellPanel(int index) {
-            this.index = index;
-            this.marker = '.';
-            setBackground(Color.WHITE);
-            setBorder(BorderFactory.createLineBorder(Color.BLACK, 5));
-            inset = (int)(getWidth() * .05);
-        }
-
-        @Override
-        public void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            Graphics2D g2d = (Graphics2D)g;
-            g2d.setStroke(new BasicStroke(5.0f));
-            switch (marker) {
-                case 'X':
-                    g2d.setColor(Color.RED);
-                    g2d.drawLine(inset, inset, getWidth() - inset, getWidth() - inset);
-                    g2d.drawLine(getWidth() - inset, inset, inset, getWidth() - inset);
-                    break;
-                case 'Y':
-                    g2d.setColor(Color.BLUE);
-                    g2d.draw(new Ellipse2D.Double(getWidth() / 2, getHeight() / 2, getWidth() - 2 * inset, getHeight() - 2 * inset));
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        public void updateCell(char marker) {
-            this.marker = marker;
-            invalidate();
-            repaint();
-        }
     }
 }
