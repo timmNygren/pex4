@@ -21,6 +21,7 @@ public class GameHost extends GamePlayer {
         super(name);
         game = new Game();
         mainRenderFrame.setMarker('X');
+        mainRenderFrame.setLocation(50, 50);
     }
 
     // On a new thread so that swing does not block it
@@ -64,6 +65,8 @@ public class GameHost extends GamePlayer {
     // On a new thread so that swing does not block it
     @Override
     protected void startGame() {
+        // Client never goes first
+        mainRenderFrame.showWaitDialog(opponentName);
         Thread readThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -88,7 +91,7 @@ public class GameHost extends GamePlayer {
                         if (game.makeMove(splitResponse[1])) {
                             // Move apply success
                             mainRenderFrame.hideWaitDialog();
-                            updateGameBoard(game.getGameString());
+                            mainRenderFrame.updateBoardDisplay(game.getGameString());
                             if (game.checkForWin()) {
                                 sendMessage("win->" + game.getGameString());
                                 mainRenderFrame.showLoseDialog();

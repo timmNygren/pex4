@@ -18,6 +18,7 @@ public class GameClient extends GamePlayer {
     public GameClient(String name) {
         super(name);
         mainRenderFrame.setMarker('O');
+        mainRenderFrame.setLocation(Main.Main.WINDOW_SIZE + 100, 50);
     }
 
     // On a new thread so that swing does not block it
@@ -98,11 +99,11 @@ public class GameClient extends GamePlayer {
                         }
                     }
                     else if (splitResponse[0].equals("win")) {
-                        updateGameBoard(splitResponse[1]);
+                        mainRenderFrame.updateBoardDisplay(splitResponse[1]);
                         mainRenderFrame.showWinDialog();
                     }
                     else if (splitResponse[0].equals("lose")) {
-                        updateGameBoard(splitResponse[1]);
+                        mainRenderFrame.updateBoardDisplay(splitResponse[1]);
                         mainRenderFrame.showLoseDialog();
                     }
                     else {
