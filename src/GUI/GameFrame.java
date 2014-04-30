@@ -16,7 +16,11 @@ public class GameFrame extends JFrame {
 
     private ArrayList<GameCellPanel> gameCellPanels;
 
+    private JDialog waitDialog;
+    private JDialog winDialog;
+    private JDialog loseDialog;
     private JDialog connectingDialog;
+    private JDialog tieDialog;
 
     public GameFrame(String name) {
         gameCellPanels = new ArrayList<GameCellPanel>();
@@ -48,31 +52,67 @@ public class GameFrame extends JFrame {
         }
     }
 
-    public void showWaitDialog() {
-        System.out.println("wait:show");
-    }
-
-    public void hideWaitDialog() {
-        System.out.println("wait:hide");
+    public void showWaitDialog(String opponentName) {
+        waitDialog = createButtonlessDialogWithMessage("Waiting for input from " + opponentName + "...");
+        waitDialog.setVisible(true);
     }
 
     public void showWinDialog() {
-        System.out.println("win:show");
-    }
-
-    public void hideWinDialog() {
-        System.out.println("win:hide");
+        winDialog = createButtonlessDialogWithMessage("You win!");
+        winDialog.setVisible(true);
     }
 
     public void showLoseDialog() {
-        System.out.println("lose:show");
+        loseDialog = createButtonlessDialogWithMessage("You lose...");
+        loseDialog.setVisible(true);
     }
 
-    public void hideLoseDialog() {
-        System.out.println("lose:hide");
+    public void showTieDialog(){
+        tieDialog = createButtonlessDialogWithMessage("It's a tie.");
+        tieDialog.setVisible(true);
     }
 
     public void showConnectionDialog(String message) {
+        connectingDialog = createButtonlessDialogWithMessage(message);
+        connectingDialog.setVisible(true);
+    }
+
+    public void hideWaitDialog() {
+        if (waitDialog == null) {
+            return;
+        }
+       waitDialog.dispose();
+    }
+
+    public void hideWinDialog() {
+        if (winDialog == null) {
+            return;
+        }
+        winDialog.dispose();
+    }
+
+    public void hideLoseDialog() {
+        if (loseDialog == null) {
+            return;
+        }
+        loseDialog.dispose();
+    }
+
+    public void hideTieDialog() {
+        if (tieDialog == null) {
+            return;
+        }
+        tieDialog.dispose();
+    }
+
+    public void hideConnectionDialog() {
+        if (connectingDialog == null) {
+            return;
+        }
+        connectingDialog.dispose();
+    }
+
+    private JDialog createButtonlessDialogWithMessage(String message) {
         // Create the content pane for the connecting message
         JOptionPane optionPane = new JOptionPane(message,
                 JOptionPane.INFORMATION_MESSAGE,
@@ -80,28 +120,21 @@ public class GameFrame extends JFrame {
                 null,
                 new Object[]{},
                 null);
-        connectingDialog = new JDialog();
-        connectingDialog.setTitle("Message");
-        connectingDialog.setModal(true);
-        connectingDialog.setContentPane(optionPane);
-        connectingDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-
-        connectingDialog.pack();
-        connectingDialog.setVisible(true);
-//        connectingDialog.addWindowListener(new WindowAdapter() {
-//            @Override
-//            public void windowClosing(WindowEvent e) {
-//                stopping = true;
-//                removeConnectingDialog();
-//            }
-//        });
-    }
-
-    public void hideConnectionDialog() {
-        System.out.println("Removing the dialog");
-        // Remove the connecting dialogue
-        connectingDialog.dispose();
-        System.out.println("Dialog removed");
+        JDialog dialog = new JDialog();
+        dialog.setTitle("Message");
+        dialog.setModal(true);
+        dialog.setContentPane(optionPane);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                if (gameFrameEventListener != null) {
+                    gameFrameEventListener.onQuitButtonPressed();
+                }
+            }
+        });
+        dialog.pack();
+        return dialog;
     }
 
     public void setGameFrameEventListener(GameFrameEventListener gameFrameEventListener) {
