@@ -1,8 +1,6 @@
 package Model;
 
 import javax.swing.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,17 +9,28 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+/**
+ * Represents a client in the game
+ * Controls the connection and read write logic
+ * for talking with the host
+ */
 public class GameClient extends GamePlayer {
 
-    private String lastMove;
-
+    /**
+     * Parametrized constructor
+     * Creates a new instance of the client
+     * @param name      display name of the client
+     */
     public GameClient(String name) {
         super(name);
         mainRenderFrame.setMarker('O');
         mainRenderFrame.setLocation(Main.Main.WINDOW_SIZE + 100, 50);
     }
 
-    // On a new thread so that swing does not block it
+    /**
+     * Displays a panel to get the host to connect to, then attempts the connection
+     * On a new thread so that swing does not block it
+     */
     @Override
     protected void connect() {
         Thread connectThread = new Thread(new Runnable() {
@@ -66,7 +75,11 @@ public class GameClient extends GamePlayer {
         }
     }
 
-    // On a new thread so that swing does not block it
+    /**
+     * Handles the execution of the game by starting the read loop
+     * and managing the cleanup after
+     * On a new thread so that swing does not block it
+     */
     @Override
     protected void startGame() {
         Thread readThread = new Thread(new Runnable() {
@@ -130,9 +143,12 @@ public class GameClient extends GamePlayer {
         }
     }
 
+    /**
+     * Attempts to update the game board by sending a request to the host
+     * @param move          encoded move to attempt to make
+     */
     @Override
     protected void updateGameBoard(String move) {
-        lastMove = move;
         sendMessage("request->" + move);
         mainRenderFrame.showWaitDialog(opponentName);
     }
