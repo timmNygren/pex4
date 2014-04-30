@@ -33,15 +33,16 @@ public class Game {
         lastMarker = '.'; // Default value
     }
 
-    public void makeMove(String moveString) {
+    public boolean makeMove(String moveString) {
         DecodeMoveReturnCode returnCode = decodeMove(moveString);
         if (returnCode != DecodeMoveReturnCode.OK) {
             System.err.println("Error decoding move: " + returnCode.getMessage());
             System.err.println("Cancelling from making a move");
-            return;
+            return false;
         }
 
         applyMove();
+        return true;
     }
 
     public boolean checkForWin() {
@@ -110,7 +111,11 @@ public class Game {
     }
 
     private void applyMove() {
-        gameString.replace(Character.forDigit(currentIndex, 10), currentMarker);
+        gameString = gameString.replace(Character.forDigit(currentIndex, 10), currentMarker);
         lastMarker = currentMarker;
+    }
+
+    public String getGameString() {
+        return gameString;
     }
 }

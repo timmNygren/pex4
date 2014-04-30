@@ -16,6 +16,8 @@ public class GameFrame extends JFrame {
 
     private ArrayList<GameCellPanel> gameCellPanels;
 
+    private JDialog connectingDialog;
+
     public GameFrame(String name) {
         gameCellPanels = new ArrayList<GameCellPanel>();
 
@@ -38,10 +40,66 @@ public class GameFrame extends JFrame {
         add(createGameStatusPanel(), BorderLayout.CENTER);
     }
 
-    public void update() {
-        for (GameCellPanel cellPanel : gameCellPanels) {
-            cellPanel.update();
+    public void updateBoardDisplay(String boardDescriptor) {
+        for (int i = 0; i < boardDescriptor.length(); ++i) {
+            gameCellPanels.get(i).updateCell(boardDescriptor.charAt(i));
         }
+    }
+
+    public void showWaitDialog() {
+        System.out.println("wait:show");
+    }
+
+    public void hideWaitDialog() {
+        System.out.println("wait:hide");
+    }
+
+    public void showWinDialog() {
+        System.out.println("win:show");
+    }
+
+    public void hideWinDialog() {
+        System.out.println("win:hide");
+    }
+
+    public void showLoseDialog() {
+        System.out.println("lose:show");
+    }
+
+    public void hideLoseDialog() {
+        System.out.println("lose:hide");
+    }
+
+    public void showConnectionDialog(String message) {
+        // Create the content pane for the connecting message
+        JOptionPane optionPane = new JOptionPane(message,
+                JOptionPane.INFORMATION_MESSAGE,
+                JOptionPane.DEFAULT_OPTION,
+                null,
+                new Object[]{},
+                null);
+        connectingDialog = new JDialog();
+        connectingDialog.setTitle("Message");
+        connectingDialog.setModal(true);
+        connectingDialog.setContentPane(optionPane);
+        connectingDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+
+        connectingDialog.pack();
+        connectingDialog.setVisible(true);
+//        connectingDialog.addWindowListener(new WindowAdapter() {
+//            @Override
+//            public void windowClosing(WindowEvent e) {
+//                stopping = true;
+//                removeConnectingDialog();
+//            }
+//        });
+    }
+
+    public void hideConnectionDialog() {
+        System.out.println("Removing the dialog");
+        // Remove the connecting dialogue
+        connectingDialog.dispose();
+        System.out.println("Dialog removed");
     }
 
     public void setGameFrameEventListener(GameFrameEventListener gameFrameEventListener) {
@@ -91,6 +149,7 @@ public class GameFrame extends JFrame {
                 }
             });
             statusPanel.add(tempPanel);
+            gameCellPanels.add(tempPanel);
         }
 
         return statusPanel;
@@ -105,35 +164,29 @@ public class GameFrame extends JFrame {
         public void onValidLocationClicked(String encodedClickMessage);
     }
 
-    private enum GameCellState {
-        EMPTY,
-        OCCUPIED_X,
-        OCCUPIED_Y
-    }
-
     private class GameCellPanel extends JPanel {
 
-        private GameCellState state;
         private int index;
 
         public GameCellPanel(int index) {
-            state = GameCellState.EMPTY;
             this.index = index;
             setBackground(Color.GRAY);
         }
 
-        public void update() {
-            switch (state) {
-                case EMPTY:
-                    setBackground(Color.BLACK);
-                    break;
-                case OCCUPIED_X:
+        public void updateCell(char marker) {
+            switch (marker) {
+                case 'X':
                     setBackground(Color.RED);
                     break;
-                case OCCUPIED_Y:
+                case 'O':
                     setBackground(Color.BLUE);
                     break;
+                default:
+                    setBackground(Color.GRAY);
+                    break;
             }
+            invalidate();
+            repaint();
         }
     }
 }

@@ -15,7 +15,6 @@ import java.net.UnknownHostException;
 public class GameHost extends GamePlayer {
 
     private Game game;
-    private JDialog connectingDialog;
 
 
     public GameHost(String name) {
@@ -33,70 +32,76 @@ public class GameHost extends GamePlayer {
             e.printStackTrace();
             System.exit(1);
         }
-        Thread connectionThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    if (stopping) {return;}
-                    ServerSocket serverSocket = new ServerSocket(Main.Main.PORT);
-                    if (stopping) {return;}
-                    Socket gameClientSocket = serverSocket.accept();
-                    if (stopping) {return;}
-                    input = new BufferedReader(new InputStreamReader(gameClientSocket.getInputStream()));
-                    output = new PrintWriter(gameClientSocket.getOutputStream(), true);
-                    if (stopping) {return;}
-                    opponentName = input.readLine();
-                    output.println(name);
-                    connectionSocket = gameClientSocket;
-                    removeConnectingDialog();
-                }
-                catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        // Create the content pane for the connecting message
-        JOptionPane optionPane = new JOptionPane("Awaiting for opponent to connect to " + thisIP + ". Please wait.",
-                JOptionPane.INFORMATION_MESSAGE,
-                JOptionPane.DEFAULT_OPTION,
-                null,
-                new Object[]{},
-                null);
-        connectingDialog = new JDialog();
-        connectingDialog.setTitle("Message");
-        connectingDialog.setModal(true);
-        connectingDialog.setContentPane(optionPane);
-        connectingDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-        connectingDialog.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                stopping = true;
-                removeConnectingDialog();
-            }
-        });
-        connectingDialog.pack();
-        System.out.println("Creating connection thread");
-        stopping = false;
-        connectionThread.start();
-        connectingDialog.setVisible(true);
-    }
+        try {
+            ServerSocket serverSocket = new ServerSocket(Main.Main.PORT);
+            Socket gameClientSocket = serverSocket.accept();
+            input = new BufferedReader(new InputStreamReader(gameClientSocket.getInputStream()));
+            output = new PrintWriter(gameClientSocket.getOutputStream(), true);
+            opponentName = input.readLine();
+            output.println(name);
+            connectionSocket = gameClientSocket;
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
 
-    private void removeConnectingDialog() {
-        System.out.println("Removing the dialog");
-        // Remove the connecting dialogue
-        connectingDialog.dispose();
-        System.out.println("Dialog removed");
+        stopping = false;
     }
 
     @Override
-    protected void startGame() throws IOException {
+    protected void startGame() {
         String move;
 
         do {
-            move = input.readLine();
+            move = readMessage();
+            if (move == null) {
+                System.err.println("Message failed to read");
+                return;
+            }
 
-            System.out.println(move);
+            String[] splitResponse = move.split("->");
+            if (splitResponse.length != 2) {
+                System.err.println("Poorly formed communications packet");
+                continue;
+            }
 
+            if (splitResponse[0].equals("request")) {
+                if (game.makeMove(splitResponse[1])) {
+                    // Move apply success
+                    mainRenderFrame.hideWaitDialog();
+                    updateGameBoard(game.getGameString());
+                    if (game.checkForWin()) {
+                        sendMessage("update->WIN");
+                        mainRenderFrame.showLoseDialog();
+                        // Stop the read loop here since the game is over
+                        break;
+                    }
+                    else {
+                        sendMessage("update->" + game.getGameString());
+                    }
+                }
+                else { // Bad move received
+                    sendMessage("update->BAD");
+                }
+            }
+            else {
+                System.err.println("Bad communications verb");
+            }
         } while (!move.equalsIgnoreCase(QUIT_KEYWORD) && !stopping);
+    }
+
+    @Override
+    protected void updateGameBoard(String move) {
+        if (game.makeMove(move)) {
+            if (game.checkForWin()) {
+                sendMessage("update->LOSE");
+                mainRenderFrame.showWinDialog();
+            }
+            else {
+                sendMessage("update->" + game.getGameString());
+                mainRenderFrame.showWaitDialog();
+                mainRenderFrame.updateBoardDisplay(game.getGameString());
+            }
+        }
     }
 }

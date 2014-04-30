@@ -36,19 +36,12 @@ public abstract class GamePlayer implements Runnable, GameFrame.GameFrameEventLi
     }
 
     protected abstract void connect();
-    protected abstract void startGame() throws IOException;
+    protected abstract void startGame();
 
     @Override
     public void run() {
-        try {
-            connect();
-            startGame();
-        }
-        catch (IOException e) {
-            System.err.println("Exception in game execution, socket could not be read or written");
-            System.err.println("Exception message: " + e.getMessage());
-            e.printStackTrace();
-        }
+        connect();
+        startGame();
 
         try {
             if (input != null) {
@@ -86,4 +79,21 @@ public abstract class GamePlayer implements Runnable, GameFrame.GameFrameEventLi
     }
 
     public String getName() { return name; }
+
+    protected void sendMessage(String message) {
+        System.out.println("writeToOpponent: " + message);
+        output.write(message);
+    }
+
+    protected String readMessage() {
+        String message = null;
+        try {
+            message = input.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println("readMessage: " + message);
+        return message;
+    }
+
 }
