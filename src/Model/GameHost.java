@@ -1,5 +1,6 @@
 package Model;
 
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,14 +16,14 @@ public class GameHost extends GamePlayer {
 
     public GameHost(String name) {
         super(name);
-
         game = new Game();
     }
 
     @Override
-    protected void connect(String ip) {
+    protected void connect() {
+
         try {
-            System.out.println(("Connect to " + InetAddress.getLocalHost().getHostAddress() + "."));
+            label.setText(("Connect to " + InetAddress.getLocalHost().getHostAddress() + "."));
         } catch(UnknownHostException e) {
             e.printStackTrace();
             System.exit(1);
@@ -31,7 +32,7 @@ public class GameHost extends GamePlayer {
         try {
             ServerSocket serverSocket = new ServerSocket(Main.Main.PORT);
             Socket gameClientSocket = serverSocket.accept();
-            BufferedReader input = new BufferedReader(new InputStreamReader(gameClientSocket.getInputStream()));
+            input = new BufferedReader(new InputStreamReader(gameClientSocket.getInputStream()));
             output = new PrintWriter(gameClientSocket.getOutputStream(), true);
 
             // Exchange names for 'waiting for move from ' text
@@ -39,6 +40,8 @@ public class GameHost extends GamePlayer {
             output.println(name);
             // label.setText("Connected to " + clientName);
             // TODO: Make connected popup?
+
+            connectionSocket = gameClientSocket;
         }
         catch (IOException e) {
             e.printStackTrace();

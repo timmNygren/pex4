@@ -1,5 +1,9 @@
 package Model;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -9,9 +13,6 @@ public abstract class GamePlayer implements Runnable {
 
     protected static final String QUIT_KEYWORD = ":quit:";
 
-    protected String connectionMessage;
-    protected String gamePlayerIdentifier;
-
     protected String name;
     protected String opponentName;
 
@@ -19,16 +20,43 @@ public abstract class GamePlayer implements Runnable {
     protected BufferedReader input;
     protected PrintWriter output;
 
+    protected JFrame mainRenderFrame;
+    protected JLabel label;
+    protected JTextField text;
+
     public GamePlayer(String name) {
         this.name = name;
+        mainRenderFrame = new JFrame("Tic-Tac-Toe: Player " + this.name);
+        mainRenderFrame.setLayout(new BorderLayout());
+        mainRenderFrame.setSize(new Dimension(Main.Main.WINDOW_SIZE, Main.Main.WINDOW_SIZE));
+        mainRenderFrame.setLocation(50, 50);
+
+        label = new JLabel("Something");
+
+        text = new JTextField(20);
+        text.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String update = text.getText();
+                sendTurn(update);
+            }
+        });
+
+        mainRenderFrame.add(label, BorderLayout.NORTH);
+        mainRenderFrame.add(text, BorderLayout.SOUTH);
+
+
+        mainRenderFrame.setVisible(true);
     }
 
-    protected abstract void connect(String ip);
+    protected abstract void connect();
     protected abstract void startGame() throws IOException;
 
     @Override
     public void run() {
         try {
+            System.out.println("Running thread");
+            connect();
             startGame();
         }
         catch (IOException e) {
@@ -66,12 +94,4 @@ public abstract class GamePlayer implements Runnable {
     }
 
     public String getName() { return name; }
-
-    public String getConnectionMessage() {
-        return connectionMessage;
-    }
-
-    public String getGamePlayerIdentifier() {
-        return gamePlayerIdentifier;
-    }
 }

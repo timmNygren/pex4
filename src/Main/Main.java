@@ -2,6 +2,7 @@ package Main;
 
 import Model.GameClient;
 import Model.GameHost;
+import Model.GamePlayer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,6 +21,8 @@ public class Main {
     private JButton serverButton;
     private JButton clientButton;
 
+    private GamePlayer currentGame;
+
     public Main() {
 
         mainFrame = new JFrame("Tic-Tac-Toe");
@@ -31,37 +34,20 @@ public class Main {
         serverButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                GameHost host = new GameHost(name);
-//                player = host;
-                Thread listener = new Thread(host);
+                currentGame = new GameHost(name);
+                Thread listener = new Thread(currentGame);
                 listener.start();
                 mainFrame.setVisible(false);
-//                try {
-//                    listener.join();
-//                    mainFrame.setVisible(true);
-//                    listener = null;
-//                } catch (InterruptedException e1) {
-//                    e1.printStackTrace();
-//                }
             }
         });
         clientButton = new JButton("Join a game");
         clientButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("CALL ME MAYBE");
-                GameClient client = new GameClient(name);
-//                player = client;
-                Thread listener = new Thread(client);
+                currentGame = new GameClient(name);
+                Thread listener = new Thread(currentGame);
                 listener.start();
                 mainFrame.setVisible(false);
-//                try {
-//                    listener.join();
-//                } catch (InterruptedException e1) {
-//                    e1.printStackTrace();
-//                }
-//                mainFrame.setVisible(true);
-//                listener = null;
             }
         });
 

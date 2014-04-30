@@ -1,5 +1,6 @@
 package Model;
 
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,14 +13,13 @@ public class GameClient extends GamePlayer {
 
     public GameClient(String name) {
         super(name);
-        connectionMessage = "Enter IP address for server:";
-        gamePlayerIdentifier = "Model.Game Client";
     }
 
-    protected void connect(String ip) {
+    protected void connect() {
 
+        String ip = JOptionPane.showInputDialog(mainRenderFrame, "Enter IP address for server:", "Model.GameClient", JOptionPane.QUESTION_MESSAGE);
 
-        if (ip == null || ip.isEmpty()) {
+            if (ip == null || ip.isEmpty()) {
             try {
                 ip = InetAddress.getLocalHost().getHostAddress();
             } catch (UnknownHostException e) {
