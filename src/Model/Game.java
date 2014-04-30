@@ -1,7 +1,15 @@
 package Model;
 
+/**
+ * Models the game as a string and provides convience methods for editing
+ * the string and decoding the moves that come across the network
+ */
 public class Game {
 
+    /**
+     * All of the response codes that can occur when
+     * decoding a move string
+     */
     public enum DecodeMoveReturnCode {
         OK                                  ("Decoding succeeded"),
         WRONG_FORMATTING                    ("Move string formatted incorrectly"),
@@ -28,11 +36,19 @@ public class Game {
     private int currentIndex;
     private char currentMarker;
 
+    /**
+     * Creates a new, blank game
+     */
     public Game() {
         gameString = "012345678";
         lastMarker = '.'; // Default value
     }
 
+    /**
+     * Attempts to make a move
+     * @param moveString        encoded move string
+     * @return                  true if the move succeeded in applying
+     */
     public boolean makeMove(String moveString) {
         DecodeMoveReturnCode returnCode = decodeMove(moveString);
         if (returnCode != DecodeMoveReturnCode.OK) {
@@ -45,6 +61,10 @@ public class Game {
         return true;
     }
 
+    /**
+     * Checks to see if there is a winner on the board
+     * @return                  true if there is a winner
+     */
     public boolean checkForWin() {
         return ((gameString.charAt(0) == gameString.charAt(1) && gameString.charAt(1) == gameString.charAt(2)) || // Top row
                 (gameString.charAt(3) == gameString.charAt(4) && gameString.charAt(4) == gameString.charAt(5)) || // Middle row
@@ -57,6 +77,10 @@ public class Game {
 
     }
 
+    /**
+     * Checks to see if there is a tie on the board
+     * @return                  true if the board is a tie
+     */
     public boolean checkForTie() {
         if (checkForWin()) {
             return false;
@@ -69,6 +93,12 @@ public class Game {
         return true;
     }
 
+    /**
+     * Decodes a move string from the network, and creates a
+     * safe index and marker to use to apply the move
+     * @param moveString            move string from a player
+     * @return                      return code of the decoding status
+     */
     private DecodeMoveReturnCode decodeMove(String moveString) {
         String[] maybeMoveDecoded = moveString.split(":");
         int index;
@@ -120,11 +150,19 @@ public class Game {
         return DecodeMoveReturnCode.OK;
     }
 
+    /**
+     * Actually applies the move to the board
+     * Assumes that there is a correct move here already
+     */
     private void applyMove() {
         gameString = gameString.replace(Character.forDigit(currentIndex, 10), currentMarker);
         lastMarker = currentMarker;
     }
 
+    /**
+     * Gets the game string
+     * @return      Immutable version of the game string
+     */
     public String getGameString() {
         return gameString;
     }
