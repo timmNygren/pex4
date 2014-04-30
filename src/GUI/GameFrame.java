@@ -6,6 +6,9 @@ import java.awt.event.*;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 
+/**
+ * GUI representing the main game execution
+ */
 public class GameFrame extends JFrame {
 
     private static final int NUM_ROWS = 3;
@@ -23,6 +26,11 @@ public class GameFrame extends JFrame {
     private JDialog connectingDialog;
     private JDialog tieDialog;
 
+    /**
+     * Parametrized constructor
+     * Creates a new game frame given a name
+     * @param name          name of the player this panel manages
+     */
     public GameFrame(String name) {
         gameCellPanels = new ArrayList<GameCellPanel>();
 
@@ -47,42 +55,66 @@ public class GameFrame extends JFrame {
         add(createGameStatusPanel(), BorderLayout.CENTER);
     }
 
+    /**
+     * Updates the display of the board by updating all the cells
+     * @param boardDescriptor           board string used to update the board
+     */
     public void updateBoardDisplay(String boardDescriptor) {
         for (int i = 0; i < boardDescriptor.length(); ++i) {
             gameCellPanels.get(i).updateCell(boardDescriptor.charAt(i));
         }
     }
 
+    /**
+     * Shows the dialog prompting the user to wait for their opponent
+     * @param opponentName              the opponent's name
+     */
     public void showWaitDialog(String opponentName) {
         waitDialog = createButtonlessDialogWithMessage("Waiting for input from " + opponentName + "...");
         waitDialog.setVisible(true);
         setEnabled(false);
     }
 
+    /**
+     * Shows a dialog indicating that the user has won
+     */
     public void showWinDialog() {
         winDialog = createButtonlessDialogWithMessage("You win!");
         winDialog.setVisible(true);
         setEnabled(false);
     }
 
+    /**
+     * Shows a dialog indicating that the user has lost
+     */
     public void showLoseDialog() {
         loseDialog = createButtonlessDialogWithMessage("You lose...");
         loseDialog.setVisible(true);
         setEnabled(false);
     }
 
+    /**
+     * Shows a dialog indicating that the game is a tie
+     */
     public void showTieDialog(){
         tieDialog = createButtonlessDialogWithMessage("It's a tie.");
         tieDialog.setVisible(true);
         setEnabled(false);
     }
 
+    /**
+     * Shows a please wait dialog for the connection to complete
+     * @param message               specific message for the connection completion
+     */
     public void showConnectionDialog(String message) {
         connectingDialog = createButtonlessDialogWithMessage(message);
         connectingDialog.setVisible(true);
         setEnabled(false);
     }
 
+    /**
+     * Hides the wait dialog
+     */
     public void hideWaitDialog() {
         if (waitDialog == null) {
             return;
@@ -91,6 +123,9 @@ public class GameFrame extends JFrame {
         setEnabled(true);
     }
 
+    /**
+     * Hides the win dialog
+     */
     public void hideWinDialog() {
         if (winDialog == null) {
             return;
@@ -100,6 +135,9 @@ public class GameFrame extends JFrame {
 
     }
 
+    /**
+     * Hides the lose dialog
+     */
     public void hideLoseDialog() {
         if (loseDialog == null) {
             return;
@@ -109,6 +147,9 @@ public class GameFrame extends JFrame {
 
     }
 
+    /**
+     * Hides the tie dialog
+     */
     public void hideTieDialog() {
         if (tieDialog == null) {
             return;
@@ -118,6 +159,9 @@ public class GameFrame extends JFrame {
 
     }
 
+    /**
+     * Hides the connection waiting to complete dialog
+     */
     public void hideConnectionDialog() {
         if (connectingDialog == null) {
             return;
@@ -161,10 +205,18 @@ public class GameFrame extends JFrame {
         return dialog;
     }
 
+    /**
+     * Sets the listener for game events
+     * @param gameFrameEventListener            the listener to set
+     */
     public void setGameFrameEventListener(GameFrameEventListener gameFrameEventListener) {
         this.gameFrameEventListener = gameFrameEventListener;
     }
 
+    /**
+     * Sets the marker for the player
+     * @param marker        marker to set
+     */
     public void setMarker(char marker) {
         if (marker != 'X' && marker != 'O') {
             return;
@@ -218,8 +270,21 @@ public class GameFrame extends JFrame {
         return String.format("%d:%c", index, marker);
     }
 
+    /**
+     * Used to update another class of events pertaining to
+     * certain UI events
+     */
     public interface GameFrameEventListener {
+        /**
+         * Notifies that the quit button has been pressed
+         * or that the window has been closed
+         */
         public void onQuitButtonPressed();
+
+        /**
+         * Notifies that a location has been clicked for the next move
+         * @param encodedClickMessage           move message generated from the click
+         */
         public void onValidLocationClicked(String encodedClickMessage);
     }
 }
